@@ -15,10 +15,19 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(
+          'Profile',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        backgroundColor: const Color(0xFF0A1929),
+        foregroundColor: Colors.white,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout_rounded),
             onPressed: () {
               _showLogoutDialog(context, ref);
             },
@@ -26,71 +35,129 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ],
       ),
+      backgroundColor: const Color(0xFF0A1929),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(userStatsProvider);
         },
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
           children: [
             // Profile Card
             Card(
-              elevation: 2,
+              elevation: 4,
+              shadowColor: AppTheme.primary.withOpacity(0.3),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(24),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundColor: AppTheme.primary,
-                      child: Text(
-                        user?.name.substring(0, 1).toUpperCase() ?? 'U',
-                        style: Theme.of(context).textTheme.displayMedium?.copyWith(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF1E3A5F),
+                      const Color(0xFF132943),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primary.withOpacity(0.4),
+                              blurRadius: 20,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 55,
+                          backgroundColor: AppTheme.primary,
+                          child: Text(
+                            user?.name.substring(0, 1).toUpperCase() ?? 'U',
+                            style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        user?.name ?? 'User',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      user?.name ?? 'User',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.phone,
-                          size: 16,
-                          color: AppTheme.textLight,
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.2),
+                            width: 1,
+                          ),
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          user?.phone ?? '',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppTheme.textLight,
-                              ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.phone_rounded,
+                              size: 18,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              user?.phone ?? '',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
             // Statistics
-            Text(
-              'Statistics',
-              style: Theme.of(context).textTheme.titleLarge,
+            Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: AppTheme.primary,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Statistics',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                        color: Colors.white,
+                      ),
+                ),
+              ],
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             statsAsync.when(
               data: (stats) => Column(
@@ -132,56 +199,133 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
             // About Section
-            Text(
-              'About',
-              style: Theme.of(context).textTheme.titleLarge,
+            Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: AppTheme.primary,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'About',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                        color: Colors.white,
+                      ),
+                ),
+              ],
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Icon(Icons.info_outline, color: AppTheme.primary),
-                    title: const Text('About DuTaksim'),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {
-                      _showAboutDialog(context);
-                    },
+              elevation: 3,
+              shadowColor: Colors.black.withOpacity(0.3),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF1E3A5F),
+                      const Color(0xFF132943),
+                    ],
                   ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: Icon(Icons.privacy_tip_outlined, color: AppTheme.primary),
-                    title: const Text('Privacy Policy'),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PrivacyPolicyScreen(),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      leading: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primary.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      );
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: Icon(Icons.description_outlined, color: AppTheme.primary),
-                    title: const Text('Terms of Service'),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const TermsOfServiceScreen(),
+                        child: Icon(Icons.info_outline_rounded, color: AppTheme.primary, size: 24),
+                      ),
+                      title: Text(
+                        'About DuTaksim',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
                         ),
-                      );
-                    },
-                  ),
-                ],
+                      ),
+                      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.white.withOpacity(0.5)),
+                      onTap: () {
+                        _showAboutDialog(context);
+                      },
+                    ),
+                    Divider(height: 1, color: Colors.white.withOpacity(0.1)),
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      leading: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primary.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(Icons.privacy_tip_outlined, color: AppTheme.primary, size: 24),
+                      ),
+                      title: Text(
+                        'Privacy Policy',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.white.withOpacity(0.5)),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PrivacyPolicyScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    Divider(height: 1, color: Colors.white.withOpacity(0.1)),
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      leading: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primary.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(Icons.description_outlined, color: AppTheme.primary, size: 24),
+                      ),
+                      title: Text(
+                        'Terms of Service',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.white.withOpacity(0.5)),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TermsOfServiceScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -192,7 +336,7 @@ class ProfileScreen extends ConsumerWidget {
               child: Text(
                 'DuTaksim v1.0.0',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textLight,
+                      color: Colors.white.withOpacity(0.5),
                     ),
               ),
             ),
@@ -203,7 +347,7 @@ class ProfileScreen extends ConsumerWidget {
               child: Text(
                 'Made for Bank Eskhata Competition',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textLight,
+                      color: Colors.white.withOpacity(0.5),
                     ),
               ),
             ),
@@ -309,42 +453,78 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.textLight,
-                        ),
+      elevation: 3,
+      shadowColor: color.withOpacity(0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFF1E3A5F),
+              const Color(0xFF132943),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: color.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      color.withOpacity(0.25),
+                      color.withOpacity(0.15),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    showCurrency ? '$amount TJS' : amount,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: color,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ],
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(icon, color: color, size: 28),
               ),
-            ),
-          ],
+              const SizedBox(width: 18),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.white.withOpacity(0.7),
+                          ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      showCurrency ? '$amount TJS' : amount,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: color,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
