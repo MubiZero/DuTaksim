@@ -101,21 +101,9 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     // Show dialog to select who paid
     final paidBy = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Who paid?'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Select the person who paid the bill:'),
-            const SizedBox(height: 16),
-            ...session.participants.map((p) => RadioListTile<String>(
-                  title: Text(p.name),
-                  value: p.id,
-                  groupValue: user.id,
-                  onChanged: (value) => Navigator.pop(context, value),
-                )),
-          ],
-        ),
+      builder: (context) => _WhosPaidDialog(
+        participants: session.participants,
+        currentUserId: user.id,
       ),
     );
 
@@ -201,6 +189,19 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   Widget build(BuildContext context) {
     final sessionAsync = ref.watch(sessionNotifierProvider);
     final user = ref.watch(currentUserProvider);
+
+    // Listen for session changes and redirect if finalized
+    ref.listen<AsyncValue<BillSession?>>(sessionNotifierProvider, (previous, next) {
+      next.whenData((session) {
+        // If session has bill_id, it means it was finalized - redirect to bill details
+        if (session != null && session.billId != null && mounted) {
+          // Clear the session state
+          ref.read(sessionNotifierProvider.notifier).leaveSession();
+          // Navigate to bill details
+          context.go('/bill/${session.billId}');
+        }
+      });
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -509,6 +510,144 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// Stateful dialog for selecting who paid
+class _WhosPaidDialog extends StatefulWidget {
+  final List<dynamic> participants;
+  final String currentUserId;
+
+  const _WhosPaidDialog({
+    required this.participants,
+    required this.currentUserId,
+  });
+
+  @override
+  State<_WhosPaidDialog> createState() => _WhosPaidDialogState();
+}
+
+class _WhosPaidDialogState extends State<_WhosPaidDialog> {
+  late String _selectedUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    // Default to current user
+    _selectedUserId = widget.currentUserId;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Row(
+        children: [
+          Icon(Icons.payment, color: AppTheme.primary),
+          const SizedBox(width: 12),
+          const Text('Who paid the bill?'),
+        ],
+      ),
+      content: SizedBox(
+        width: 400,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Select the person who paid the entire bill:',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+            ),
+            const SizedBox(height: 20),
+            ...widget.participants.map((p) {
+              final isSelected = p.id == _selectedUserId;
+              return Card(
+                elevation: isSelected ? 4 : 1,
+                color: isSelected ? AppTheme.primary.withOpacity(0.1) : null,
+                margin: const EdgeInsets.only(bottom: 12),
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      _selectedUserId = p.id;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: isSelected
+                              ? AppTheme.primary
+                              : Colors.grey[300],
+                          child: Text(
+                            p.name[0].toUpperCase(),
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black87,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                p.name,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                p.phone,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (isSelected)
+                          Icon(
+                            Icons.check_circle,
+                            color: AppTheme.primary,
+                            size: 28,
+                          )
+                        else
+                          Icon(
+                            Icons.radio_button_unchecked,
+                            color: Colors.grey[400],
+                            size: 28,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton.icon(
+          onPressed: () => Navigator.pop(context, _selectedUserId),
+          icon: const Icon(Icons.check),
+          label: const Text('Confirm'),
+        ),
+      ],
     );
   }
 }

@@ -226,6 +226,8 @@ async function getBillById(billId) {
 
   bill.items = itemsResult.rows;
 
+  console.log('Bill items with participants:', JSON.stringify(bill.items, null, 2));
+
   // Get debts
   const debtsResult = await pool.query(
     `SELECT d.*,

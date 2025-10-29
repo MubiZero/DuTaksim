@@ -7,7 +7,7 @@ import 'providers/user_provider.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/main_navigation_screen.dart';
 import 'screens/create_bill_screen.dart';
-import 'screens/bill_detail_screen.dart';
+import 'screens/bill_detail_screen_new.dart';
 import 'screens/create_session_screen.dart';
 import 'screens/nearby_sessions_screen.dart';
 import 'screens/qr_scanner_screen.dart';
@@ -52,7 +52,7 @@ class _DuTaksimAppState extends ConsumerState<DuTaksimApp> {
           path: '/bill/:id',
           builder: (context, state) {
             final billId = state.pathParameters['id']!;
-            return BillDetailScreen(billId: billId);
+            return BillDetailScreenNew(billId: billId);
           },
         ),
         GoRoute(

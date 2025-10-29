@@ -369,18 +369,43 @@ router.post('/:sessionId/finalize', authenticateToken, validateUUIDParam('sessio
 
       const billItem = billItemResult.rows[0];
 
-      // If item is for specific user, add to item_participants
-      if (item.for_user_id && !item.is_shared) {
+      if (item.is_shared) {
+        // If item is shared, add all participants
+        for (const participant of participantsResult.rows) {
+          await client.query(
+            'INSERT INTO item_participants (item_id, user_id) VALUES ($1, $2)',
+            [billItem.id, participant.user_id]
+          );
+        }
+      } else if (item.for_user_id) {
+        // If item is for specific user
         await client.query(
           'INSERT INTO item_participants (item_id, user_id) VALUES ($1, $2)',
           [billItem.id, item.for_user_id]
+        );
+      } else {
+        // If no specific user, assume it's for the person who added it
+        await client.query(
+          'INSERT INTO item_participants (item_id, user_id) VALUES ($1, $2)',
+          [billItem.id, item.added_by]
         );
       }
     }
 
     // Calculate debts (reuse existing debtCalculator)
     const debtCalculator = require('../utils/debtCalculator');
-    await debtCalculator.calculateDebts(client, bill.id, paidBy, tips || 0);
+    const debts = await debtCalculator.calculateDebts(client, bill.id, paidBy, tips || 0);
+
+    // Save debts to database
+    for (const debt of debts) {
+      await client.query(
+        `INSERT INTO debts (bill_id, debtor_id, creditor_id, amount, is_paid)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [bill.id, debt.debtorId, debt.creditorId, debt.amount, false]
+      );
+    }
+
+    console.log(`Created ${debts.length} debts for bill ${bill.id}`);
 
     // Update session status
     await client.query(

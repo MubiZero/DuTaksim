@@ -107,9 +107,16 @@ class ApiService {
 
   Future<Bill> getBillById(String billId) async {
     try {
+      print('API Service - Getting bill: $billId');
       final response = await _dio.get('/bills/$billId');
-      return Bill.fromJson(response.data['bill']);
+      print('API Service - Bill response: ${response.data}');
+
+      final billData = response.data['bill'];
+      print('API Service - Bill items: ${billData['items']}');
+
+      return Bill.fromJson(billData);
     } catch (e) {
+      print('API Service - Error getting bill: $e');
       throw Exception('Failed to fetch bill: $e');
     }
   }
