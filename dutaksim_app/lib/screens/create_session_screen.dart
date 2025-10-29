@@ -138,28 +138,122 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0A1929),
       appBar: AppBar(
-        title: const Text('Create Session'),
+        backgroundColor: const Color(0xFF0A1929),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Create Session',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Session Name',
-                hintText: 'e.g., Lunch at Centro',
-                border: OutlineInputBorder(),
+            // Session Name Input
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primary.withOpacity(0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primary.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.edit_note,
+                          color: AppTheme.primary,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Session Details',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _nameController,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    decoration: InputDecoration(
+                      labelText: 'Session Name',
+                      labelStyle: TextStyle(
+                        color: Colors.white.withOpacity(0.6),
+                        fontSize: 14,
+                      ),
+                      hintText: 'e.g., Lunch at Centro',
+                      hintStyle: TextStyle(
+                        color: Colors.white.withOpacity(0.3),
+                        fontSize: 14,
+                      ),
+                      filled: true,
+                      fillColor: Colors.black.withOpacity(0.2),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: AppTheme.primary.withOpacity(0.3),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: Colors.white.withOpacity(0.1),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(
+                          color: AppTheme.primary,
+                          width: 2,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             const Text(
               'How do you want to add participants?',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
@@ -194,14 +288,52 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
 
             // Location toggle for room mode
             if (_selectedMode == ParticipantMode.room) ...[
-              Card(
+              Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
                 child: SwitchListTile(
-                  secondary: const Icon(Icons.gps_fixed),
-                  title: const Text('Enable GPS Discovery'),
-                  subtitle: const Text(
+                  secondary: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.success.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.gps_fixed,
+                      color: AppTheme.success,
+                      size: 24,
+                    ),
+                  ),
+                  title: const Text(
+                    'Enable GPS Discovery',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: Text(
                     'Others nearby can find and join your session',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 13,
+                    ),
                   ),
                   value: _useLocation,
+                  activeColor: AppTheme.success,
                   onChanged: (value) => setState(() => _useLocation = value),
                 ),
               ),
@@ -210,12 +342,20 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
 
             // Info cards based on mode
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppTheme.secondary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.primary.withOpacity(0.15),
+                    AppTheme.secondary.withOpacity(0.1),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: AppTheme.secondary.withOpacity(0.3),
+                  color: AppTheme.primary.withOpacity(0.3),
+                  width: 1.5,
                 ),
               ),
               child: Column(
@@ -223,22 +363,30 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.info_outline,
-                        size: 20,
-                        color: AppTheme.primary,
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primary.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.info_outline,
+                          size: 20,
+                          color: AppTheme.primary,
+                        ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 12),
                       const Text(
                         'How it works',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                          fontSize: 17,
+                          color: Colors.white,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   if (_selectedMode == ParticipantMode.room) ...[
                     _InfoPoint('Generate a QR code for others to scan'),
                     _InfoPoint('Nearby sessions appear in "Find Room" screen'),
@@ -254,14 +402,55 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
-            FilledButton.icon(
-              onPressed: _createSession,
-              icon: const Icon(Icons.add_circle),
-              label: const Text('Create Session'),
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.all(16),
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppTheme.primary, AppTheme.secondary],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primary.withOpacity(0.4),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _createSession,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 18,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.add_circle,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'Create Session',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -294,85 +483,134 @@ class _ModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: selected ? 4 : 1,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: selected ? AppTheme.primary : Colors.transparent,
-              width: 2,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: selected
+              ? AppTheme.primary
+              : Colors.white.withOpacity(0.1),
+          width: selected ? 2.5 : 1,
+        ),
+        boxShadow: [
+          if (selected)
+            BoxShadow(
+              color: AppTheme.primary.withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            )
+          else
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: iconColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: iconColor.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 32),
                 ),
-                child: Icon(icon, color: iconColor, size: 32),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        if (badge != null) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: badgeColor ?? Colors.blue,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              badge!,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                          if (badge != null) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: badgeColor ?? Colors.blue,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                badge!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ],
-                      ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (selected)
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary.withOpacity(0.2),
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[600],
+                    child: const Icon(
+                      Icons.check_circle,
+                      color: AppTheme.primary,
+                      size: 28,
+                    ),
+                  )
+                else
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 2,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              if (selected)
-                const Icon(
-                  Icons.check_circle,
-                  color: AppTheme.primary,
-                  size: 28,
-                ),
-            ],
+                  ),
+              ],
+            ),
           ),
         ),
       ),
