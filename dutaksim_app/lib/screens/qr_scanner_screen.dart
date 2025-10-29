@@ -31,13 +31,28 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
     final code = barcodes.first.rawValue;
     if (code == null || code.isEmpty) return;
 
+    print('QR Scanner - Detected code: $code');
+    await _joinSessionWithCode(code);
+  }
+
+  Future<void> _joinSessionWithCode(String code) async {
+    if (_isProcessing) {
+      print('QR Scanner - Already processing, ignoring');
+      return;
+    }
+
     setState(() => _isProcessing = true);
+    print('QR Scanner - Starting join process');
 
     try {
       final user = ref.read(currentUserProvider);
+      print('QR Scanner - Current user: ${user?.id} (${user?.name})');
+
       if (user == null) {
         throw Exception('User not logged in');
       }
+
+      print('QR Scanner - Calling joinSession with code: $code');
 
       // Try to join session
       await ref.read(sessionNotifierProvider.notifier).joinSession(
@@ -45,15 +60,24 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
             userId: user.id,
           );
 
+      print('QR Scanner - Successfully joined session');
+
+      // Navigate only after successful join
       if (mounted) {
+        print('QR Scanner - Navigating to session screen');
         context.go('/session');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('QR Scanner - Error joining session: $e');
+      print('QR Scanner - Stack trace: $stackTrace');
+
+      // Only show error if still mounted
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to join session: $e'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
           ),
         );
         setState(() => _isProcessing = false);
@@ -181,35 +205,15 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
               final code = controller.text.trim().toUpperCase();
               if (code.isEmpty) return;
 
-              Navigator.pop(context);
+              print('Manual entry - Code entered: $code');
 
-              setState(() => _isProcessing = true);
-
-              try {
-                final user = ref.read(currentUserProvider);
-                if (user == null) {
-                  throw Exception('User not logged in');
-                }
-
-                await ref.read(sessionNotifierProvider.notifier).joinSession(
-                      sessionCode: code,
-                      userId: user.id,
-                    );
-
-                if (mounted) {
-                  context.go('/session');
-                }
-              } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed to join session: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                  setState(() => _isProcessing = false);
-                }
+              // Close dialog first
+              if (mounted) {
+                Navigator.pop(context);
               }
+
+              // Use the same method as QR scanning
+              await _joinSessionWithCode(code);
             },
             child: const Text('Join'),
           ),

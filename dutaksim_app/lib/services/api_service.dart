@@ -189,13 +189,21 @@ class ApiService {
     required String userId,
   }) async {
     try {
+      print('API Service - Joining session:');
+      print('  sessionCode: $sessionCode');
+      print('  sessionId: $sessionId');
+      print('  userId: $userId');
+
       final response = await _dio.post('/sessions/join', data: {
         if (sessionCode != null) 'sessionCode': sessionCode,
         if (sessionId != null) 'sessionId': sessionId,
         'userId': userId,
       });
+
+      print('API Service - Join response: ${response.data}');
       return BillSession.fromJson(response.data);
     } catch (e) {
+      print('API Service - Join error: $e');
       throw Exception('Failed to join session: $e');
     }
   }

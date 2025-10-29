@@ -162,7 +162,7 @@ class SessionNotifier extends StateNotifier<AsyncValue<BillSession?>> {
 
   void _startAutoRefresh() {
     _stopAutoRefresh();
-    _refreshTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
       refreshSession();
     });
   }

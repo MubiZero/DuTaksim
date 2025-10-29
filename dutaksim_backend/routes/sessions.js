@@ -162,7 +162,15 @@ router.get('/nearby', authenticateToken, async (req, res) => {
 router.post('/join', authenticateToken, async (req, res) => {
   const { sessionCode, sessionId, userId } = req.body;
 
+  console.log('Join session request:', {
+    sessionCode,
+    sessionId,
+    userId,
+    body: req.body
+  });
+
   if (!userId || (!sessionCode && !sessionId)) {
+    console.log('Join session - Missing required fields');
     return res.status(400).json({ error: 'User ID and session code or ID are required' });
   }
 
