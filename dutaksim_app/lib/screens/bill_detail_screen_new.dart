@@ -144,13 +144,14 @@ class _BillDetailScreenNewState extends ConsumerState<BillDetailScreenNew> {
 
     final currentUser = ref.watch(currentUserProvider);
     final myDebts = _bill!.debts
-            ?.where((d) => d.debtorId == currentUser?.id && !d.isPaid)
+            ?.where((d) => d.debtorId == currentUser?.id)
             .toList() ??
         [];
     final debtsToMe = _bill!.debts
-            ?.where((d) => d.creditorId == currentUser?.id && !d.isPaid)
+            ?.where((d) => d.creditorId == currentUser?.id)
             .toList() ??
         [];
+    final allDebts = _bill!.debts ?? [];
 
     return Scaffold(
       appBar: AppBar(
@@ -301,6 +302,29 @@ class _BillDetailScreenNewState extends ConsumerState<BillDetailScreenNew> {
                             onMarkPaid: () => _markAsPaid(debt.id),
                             isCreditor: true,
                           )),
+                      const SizedBox(height: 24),
+                    ],
+
+                    // All Debts Overview Section
+                    if (allDebts.isNotEmpty &&
+                        (allDebts.length > myDebts.length + debtsToMe.length)) ...[
+                      _SectionHeader(
+                        icon: Icons.list_alt,
+                        title: 'All Debts',
+                        subtitle: '${allDebts.length} total',
+                        color: AppTheme.primary,
+                      ),
+                      const SizedBox(height: 12),
+                      ...allDebts
+                          .where((debt) =>
+                              debt.debtorId != currentUser?.id &&
+                              debt.creditorId != currentUser?.id)
+                          .map((debt) => _DebtCard(
+                                debt: debt,
+                                onMarkPaid: () => _markAsPaid(debt.id),
+                                isCreditor: false,
+                                isThirdParty: true,
+                              )),
                       const SizedBox(height: 24),
                     ],
 
@@ -530,21 +554,45 @@ class _DebtCard extends StatelessWidget {
   final VoidCallback? onPay;
   final VoidCallback onMarkPaid;
   final bool isCreditor;
+  final bool isThirdParty;
 
   const _DebtCard({
     required this.debt,
     this.onPay,
     required this.onMarkPaid,
     required this.isCreditor,
+    this.isThirdParty = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isPaid = debt.isPaid;
+    final cardColor = isPaid
+        ? Colors.grey.withOpacity(0.05)
+        : (isThirdParty
+            ? Colors.blue.withOpacity(0.05)
+            : (isCreditor
+                ? AppTheme.success.withOpacity(0.05)
+                : AppTheme.error.withOpacity(0.05)));
+
+    final avatarColor = isPaid
+        ? Colors.grey
+        : (isThirdParty
+            ? Colors.blue
+            : (isCreditor ? AppTheme.success : AppTheme.error));
+
+    String debtText;
+    if (isThirdParty) {
+      debtText = '${debt.debtorName ?? "Unknown"} owes ${debt.creditorName ?? "Unknown"}';
+    } else if (isCreditor) {
+      debtText = '${debt.debtorName ?? "Unknown"} owes you';
+    } else {
+      debtText = 'You owe ${debt.creditorName ?? "Unknown"}';
+    }
+
     return Card(
-      elevation: 3,
-      color: isCreditor
-          ? AppTheme.success.withOpacity(0.05)
-          : AppTheme.error.withOpacity(0.05),
+      elevation: isPaid ? 1 : 3,
+      color: cardColor,
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -552,51 +600,113 @@ class _DebtCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  backgroundColor: isCreditor ? AppTheme.success : AppTheme.error,
-                  child: Icon(
-                    isCreditor ? Icons.arrow_downward : Icons.arrow_upward,
-                    color: Colors.white,
-                  ),
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: avatarColor,
+                      child: Icon(
+                        isPaid
+                            ? Icons.check_circle
+                            : (isCreditor ? Icons.arrow_downward : Icons.arrow_upward),
+                        color: Colors.white,
+                      ),
+                    ),
+                    if (isPaid)
+                      Positioned(
+                        right: -2,
+                        bottom: -2,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.verified,
+                            size: 16,
+                            color: AppTheme.success,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        isCreditor
-                            ? '${debt.debtorName ?? "Unknown"} owes you'
-                            : 'You owe ${debt.creditorName ?? "Unknown"}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              debtText,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                decoration: isPaid ? TextDecoration.lineThrough : null,
+                                color: isPaid ? Colors.grey : null,
+                              ),
+                            ),
+                          ),
+                          if (isPaid)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppTheme.success.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Text(
+                                'PAID',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.success,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        isCreditor
-                            ? debt.debtorPhone ?? ''
-                            : debt.creditorPhone ?? '',
+                        isThirdParty
+                            ? '${debt.debtorPhone ?? ""} → ${debt.creditorPhone ?? ""}'
+                            : (isCreditor ? debt.debtorPhone ?? '' : debt.creditorPhone ?? ''),
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey[600],
                         ),
                       ),
+                      if (isPaid && debt.paidAt != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          'Paid on ${DateFormat('MMM d, y').format(debt.paidAt!)}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.success,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
                 Text(
                   '${debt.amount.toStringAsFixed(2)} TJS',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: isCreditor ? AppTheme.success : AppTheme.error,
+                    color: isPaid
+                        ? Colors.grey
+                        : (isThirdParty
+                            ? Colors.blue
+                            : (isCreditor ? AppTheme.success : AppTheme.error)),
+                    decoration: isPaid ? TextDecoration.lineThrough : null,
                   ),
                 ),
               ],
             ),
-            if (!isCreditor && onPay != null) ...[
+            if (!isPaid && !isCreditor && !isThirdParty && onPay != null) ...[
               const SizedBox(height: 16),
               Row(
                 children: [
