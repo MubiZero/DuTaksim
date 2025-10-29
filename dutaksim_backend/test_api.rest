@@ -1,0 +1,124 @@
+### DuTaksim API Tests
+### Use with REST Client extension in VS Code
+
+@baseUrl = http://localhost:3000/api
+
+### Health Check
+GET http://localhost:3000/health
+
+### ============================================
+### USER ENDPOINTS
+### ============================================
+
+### Register/Login User 1
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+{
+  "name": "Ali Rahimov",
+  "phone": "929059030"
+}
+
+### Register/Login User 2
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+{
+  "name": "Farid Mahmudov",
+  "phone": "929059031"
+}
+
+### Register/Login User 3
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+{
+  "name": "Zarina Karimova",
+  "phone": "929059032"
+}
+
+### Get User by Phone
+GET {{baseUrl}}/users/phone/929059030
+
+### Get User Stats (replace with actual user ID)
+GET {{baseUrl}}/users/YOUR_USER_ID_HERE/stats
+
+### ============================================
+### BILL ENDPOINTS
+### ============================================
+
+### Create a Bill
+POST {{baseUrl}}/bills
+Content-Type: application/json
+
+{
+  "title": "Lunch at Registon",
+  "description": "Team lunch on Friday",
+  "totalAmount": 250,
+  "paidBy": "YOUR_USER_ID_HERE",
+  "tips": 25,
+  "participants": [
+    "USER_ID_1",
+    "USER_ID_2",
+    "USER_ID_3"
+  ],
+  "items": [
+    {
+      "name": "Plov",
+      "price": 45,
+      "isShared": false,
+      "participants": ["USER_ID_1"]
+    },
+    {
+      "name": "Shashlik",
+      "price": 60,
+      "isShared": false,
+      "participants": ["USER_ID_2"]
+    },
+    {
+      "name": "Salad",
+      "price": 50,
+      "isShared": true,
+      "participants": []
+    },
+    {
+      "name": "Tea",
+      "price": 30,
+      "isShared": true,
+      "participants": []
+    },
+    {
+      "name": "Bread",
+      "price": 10,
+      "isShared": true,
+      "participants": []
+    }
+  ]
+}
+
+### Get Bills for User (replace with actual user ID)
+GET {{baseUrl}}/bills/user/YOUR_USER_ID_HERE
+
+### Get Bill by ID (replace with actual bill ID)
+GET {{baseUrl}}/bills/YOUR_BILL_ID_HERE
+
+### Mark Debt as Paid (replace with actual debt ID)
+PATCH {{baseUrl}}/bills/debts/YOUR_DEBT_ID_HERE/pay
+
+### ============================================
+### TRANSACTION ENDPOINTS
+### ============================================
+
+### Get User Transactions (replace with actual user ID)
+GET {{baseUrl}}/transactions/user/YOUR_USER_ID_HERE
+
+### ============================================
+### COMPLETE TEST FLOW
+### ============================================
+
+### Step 1: Register 3 users (run all 3 register endpoints above)
+### Step 2: Copy their IDs from responses
+### Step 3: Create a bill with those IDs
+### Step 4: Get bill details to see debts
+### Step 5: Test marking debt as paid
+### Step 6: Check user stats and transactions
