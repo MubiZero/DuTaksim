@@ -81,39 +81,114 @@ class _BillDetailScreenState extends ConsumerState<BillDetailScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Pay $name'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            QrImageView(
-              data: qrData,
-              version: QrVersions.auto,
-              size: 250.0,
-              backgroundColor: Colors.white,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            const SizedBox(height: 16),
-            Text(
-              '${amount.toStringAsFixed(2)} TJS',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Scan with Bank Eskhata app',
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.primary.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.success.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.qr_code_2,
+                      color: AppTheme.success,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Pay $name',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: QrImageView(
+                  data: qrData,
+                  version: QrVersions.auto,
+                  size: 220.0,
+                  backgroundColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: AppTheme.success.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppTheme.success.withOpacity(0.3),
+                  ),
+                ),
+                child: Text(
+                  '${amount.toStringAsFixed(2)} TJS',
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.success,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Scan with Bank Eskhata app',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white.withOpacity(0.7),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -121,15 +196,65 @@ class _BillDetailScreenState extends ConsumerState<BillDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: const Color(0xFF0A1929),
+        body: Center(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: const CircularProgressIndicator(
+              color: AppTheme.primary,
+              strokeWidth: 3,
+            ),
+          ),
+        ),
       );
     }
 
     if (_bill == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Bill Details')),
-        body: const Center(child: Text('Bill not found')),
+        backgroundColor: const Color(0xFF0A1929),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF0A1929),
+          foregroundColor: Colors.white,
+          elevation: 0,
+          title: const Text('Bill Details'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: Colors.redAccent,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Bill not found',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
@@ -144,74 +269,184 @@ class _BillDetailScreenState extends ConsumerState<BillDetailScreen> {
         [];
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0A1929),
       appBar: AppBar(
-        title: const Text('Bill Details'),
+        backgroundColor: const Color(0xFF0A1929),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Bill Details',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: _loadBill,
+        color: AppTheme.primary,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             // Bill Header
-            Card(
-              elevation: 2,
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primary.withOpacity(0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      _bill!.title,
-                      style: Theme.of(context).textTheme.displaySmall,
-                    ),
-                    if (_bill!.description?.isNotEmpty ?? false) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        _bill!.description!,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppTheme.textLight,
-                            ),
-                      ),
-                    ],
-                    const SizedBox(height: 16),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Paid by',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            Text(
-                              _bill!.paidByName ?? 'Unknown',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ],
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(
+                            Icons.receipt_long,
+                            color: AppTheme.primary,
+                            size: 28,
+                          ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Total',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            Text(
-                              '${_bill!.totalAmount.toStringAsFixed(2)} TJS',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    color: AppTheme.primary,
-                                    fontWeight: FontWeight.bold,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _bill!.title,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              if (_bill!.description?.isNotEmpty ?? false) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  _bill!.description!,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white.withOpacity(0.7),
                                   ),
-                            ),
-                          ],
+                                ),
+                              ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      DateFormat('MMMM d, y \'at\' h:mm a').format(_bill!.createdAt),
-                      style: Theme.of(context).textTheme.bodySmall,
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppTheme.primary.withOpacity(0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.account_circle,
+                                    size: 16,
+                                    color: Colors.white.withOpacity(0.6),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Paid by',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.white.withOpacity(0.6),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _bill!.paidByName ?? 'Unknown',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.account_balance_wallet,
+                                    size: 16,
+                                    color: AppTheme.accent.withOpacity(0.8),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Total',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.white.withOpacity(0.6),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${_bill!.totalAmount.toStringAsFixed(2)} TJS',
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.accent,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 14,
+                          color: Colors.white.withOpacity(0.5),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          DateFormat('MMMM d, y \'at\' h:mm a').format(_bill!.createdAt),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.white.withOpacity(0.5),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -222,11 +457,32 @@ class _BillDetailScreenState extends ConsumerState<BillDetailScreen> {
 
             // My Debts
             if (myDebts.isNotEmpty) ...[
-              Text(
-                'You Owe',
-                style: Theme.of(context).textTheme.titleLarge,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_upward,
+                      color: Colors.redAccent,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'You Owe',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               ...myDebts.map((debt) => _DebtCard(
                     debt: debt,
                     onPay: () => _showQRCode(
@@ -242,11 +498,32 @@ class _BillDetailScreenState extends ConsumerState<BillDetailScreen> {
 
             // Debts to Me
             if (debtsToMe.isNotEmpty) ...[
-              Text(
-                'Owed to You',
-                style: Theme.of(context).textTheme.titleLarge,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.success.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_downward,
+                      color: AppTheme.success,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Owed to You',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               ...debtsToMe.map((debt) => _DebtCard(
                     debt: debt,
                     onMarkPaid: () => _markAsPaid(debt.id),
@@ -256,36 +533,167 @@ class _BillDetailScreenState extends ConsumerState<BillDetailScreen> {
             ],
 
             // Items
-            Text(
-              'Items',
-              style: Theme.of(context).textTheme.titleLarge,
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.secondary.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.shopping_basket,
+                    color: AppTheme.secondary,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Items',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            ...(_bill!.items ?? []).map((item) => Card(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: ListTile(
-                    title: Text(item.name),
-                    subtitle: Text(
-                      item.isShared
-                          ? 'Shared by all'
-                          : 'Split by ${item.participants?.length ?? 0} people',
+            const SizedBox(height: 16),
+            ...(_bill!.items ?? []).map((item) => Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    trailing: Text(
-                      '${item.price.toStringAsFixed(2)} TJS',
-                      style: Theme.of(context).textTheme.titleMedium,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: item.isShared
+                          ? AppTheme.accent.withOpacity(0.3)
+                          : AppTheme.secondary.withOpacity(0.3),
+                    ),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    leading: CircleAvatar(
+                      radius: 22,
+                      backgroundColor: item.isShared
+                          ? AppTheme.accent.withOpacity(0.2)
+                          : AppTheme.secondary.withOpacity(0.2),
+                      child: Icon(
+                        item.isShared ? Icons.people : Icons.person,
+                        color: item.isShared ? AppTheme.accent : AppTheme.secondary,
+                        size: 20,
+                      ),
+                    ),
+                    title: Text(
+                      item.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        item.isShared
+                            ? 'Shared by all'
+                            : 'Split by ${item.participants?.length ?? 0} people',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.6),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                    trailing: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${item.price.toStringAsFixed(2)} TJS',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primary,
+                        ),
+                      ),
                     ),
                   ),
                 )),
 
             if (_bill!.tips > 0) ...[
               const SizedBox(height: 12),
-              Card(
+              Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppTheme.accent.withOpacity(0.3),
+                  ),
+                ),
                 child: ListTile(
-                  title: const Text('Tips'),
-                  subtitle: const Text('Shared by all'),
-                  trailing: Text(
-                    '${_bill!.tips.toStringAsFixed(2)} TJS',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  leading: CircleAvatar(
+                    radius: 22,
+                    backgroundColor: AppTheme.accent.withOpacity(0.2),
+                    child: const Icon(
+                      Icons.volunteer_activism,
+                      color: AppTheme.accent,
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text(
+                    'Tips',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Shared by all',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.6),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.accent.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${_bill!.tips.toStringAsFixed(2)} TJS',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.accent,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -294,27 +702,134 @@ class _BillDetailScreenState extends ConsumerState<BillDetailScreen> {
             const SizedBox(height: 32),
 
             // Participants
-            Text(
-              'Participants',
-              style: Theme.of(context).textTheme.titleLarge,
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primary.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.people,
+                    color: AppTheme.primary,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Participants',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            ...(_bill!.participants ?? []).map((participant) => Card(
-                  margin: const EdgeInsets.only(bottom: 8),
+            const SizedBox(height: 16),
+            ...(_bill!.participants ?? []).map((participant) => Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppTheme.primary.withOpacity(0.3),
+                    ),
+                  ),
                   child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     leading: CircleAvatar(
-                      backgroundColor: AppTheme.secondary,
+                      radius: 24,
+                      backgroundColor: AppTheme.primary.withOpacity(0.2),
                       child: Text(
                         participant.name[0].toUpperCase(),
-                        style: const TextStyle(color: Colors.white),
+                        style: const TextStyle(
+                          color: AppTheme.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
-                    title: Text(participant.name),
-                    subtitle: Text(participant.phone),
+                    title: Text(
+                      participant.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        participant.phone,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.6),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
                   ),
                 )),
 
             const SizedBox(height: 32),
+
+            // Go Back Button
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppTheme.primary, AppTheme.secondary],
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primary.withOpacity(0.4),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Navigator.of(context).pop(),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          'Go Back',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -337,60 +852,195 @@ class _DebtCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF1E3A5F), Color(0xFF132943)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isCreditor
+              ? AppTheme.success.withOpacity(0.4)
+              : Colors.redAccent.withOpacity(0.4),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: (isCreditor ? AppTheme.success : Colors.redAccent)
+                .withOpacity(0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: (isCreditor ? AppTheme.success : Colors.redAccent)
+                      .withOpacity(0.2),
+                  child: Text(
+                    (isCreditor ? debt.debtorName! : debt.creditorName!)[0]
+                        .toUpperCase(),
+                    style: TextStyle(
+                      color: isCreditor ? AppTheme.success : Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         isCreditor ? debt.debtorName! : debt.creditorName!,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
+                      const SizedBox(height: 4),
                       Text(
                         isCreditor ? debt.debtorPhone! : debt.creditorPhone!,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.7),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Text(
-                  '${debt.amount.toStringAsFixed(2)} TJS',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: isCreditor ? AppTheme.success : AppTheme.accent,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: (isCreditor ? AppTheme.success : Colors.redAccent)
+                    .withOpacity(0.15),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: (isCreditor ? AppTheme.success : Colors.redAccent)
+                      .withOpacity(0.3),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Amount:',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white.withOpacity(0.8),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    '${debt.amount.toStringAsFixed(2)} TJS',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: isCreditor ? AppTheme.success : Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             Row(
               children: [
-                if (!isCreditor && onPay != null)
+                if (!isCreditor && onPay != null) ...[
                   Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: onPay,
-                      icon: const Icon(Icons.qr_code),
-                      label: const Text('Pay Now'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primary,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [AppTheme.success, Color(0xFF28A745)],
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.success.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: onPay,
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.qr_code_2, color: Colors.white, size: 20),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Pay Now',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                if (!isCreditor && onPay != null) const SizedBox(width: 8),
+                  const SizedBox(width: 12),
+                ],
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: onMarkPaid,
-                    child: const Text('Mark as Paid'),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: onMarkPaid,
+                        borderRadius: BorderRadius.circular(14),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.check_circle_outline,
+                                  color: Colors.white, size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                'Mark as Paid',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
